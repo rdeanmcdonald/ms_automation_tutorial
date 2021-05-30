@@ -1,0 +1,11 @@
+.assets/
+.secrets/
+.terraform/
+ssl/ssl_key.pem
+terraform.tfstate.backup
+terraform.tfstate
+*.terraform.lock.hcl
+ssl/ssl_cert.pem
+*.tfplan
+templates_rendered/
+private.key
