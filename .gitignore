@@ -9,3 +9,7 @@ ssl/ssl_cert.pem
 *.tfplan
 templates_rendered/
 private.key
+.ssh/*
+.vagrant
+service_files/avs.tar.gz
+*avs.tar.gz
