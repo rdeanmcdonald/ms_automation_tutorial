@@ -13,4 +13,28 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder '.', '/vagrant', type: "rsync", rsync__exclude: [".git/", ".vagrant/"]  
   
   config.vm.box_check_update = false
+
+  ####################
+  # SHELL PROVISIONERS
+  ####################
+  # Install Puppet Agent
+  config.vm.provision "shell", preserve_order: true, name: "Download Puppet Installer", inline: "curl -1 -sL https://apt.puppet.com/puppet7-release-bionic.deb > /tmp/puppet7-release-bionic.deb"
+  config.vm.provision "shell", preserve_order: true, name: "Replace Puppet Packages", inline: "sudo dpkg -i '/tmp/puppet7-release-bionic.deb'"
+  config.vm.provision "shell", preserve_order: true, name: "Install Puppet Module", inline: "sudo apt-get update && sudo apt-get install -y puppet-agent"
+  # Install Puppet Modules
+  config.vm.provision "shell", preserve_order: true, name: "Install Archive Module", inline: "puppet module install --force --modulepath=/opt/puppetlabs/puppet/modules puppet-archive --version 5.0.0"
+  config.vm.provision "shell", preserve_order: true, name: "Install SystemD Module", inline: "puppet module install --force --modulepath=/opt/puppetlabs/puppet/modules camptocamp-systemd --version 2.12.0"
+
+  ####################
+  # PUPPET PROVISIONER
+  ####################
+  config.vm.provision :puppet do |puppet|
+    puppet.environment_path = "./puppet/environments"
+    puppet.environment = 'dev'
+    options = ['--graph']
+    puppet.facter = {
+      "managed_ip" => ENV['MANAGED_IP'],
+      "installdir" => ENV['INSTALLDIR'] || '/tmp'
+    }
+  end
 end
